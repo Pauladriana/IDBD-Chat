@@ -4,11 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
 export default function SearchBar() {
+  let a = 1;
   return (
     <>
     <Barcontainer>
       <input type="text" placeholder="Search..."></input>
-      <FontAwesomeIcon icon={faSearch} />
+      <FontAwesomeIcon icon={faSearch}/>
     </Barcontainer>
     </>
   );

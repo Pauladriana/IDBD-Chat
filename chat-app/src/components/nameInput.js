@@ -7,7 +7,8 @@ export default function NameInput(props) {
         console.log(value);
     if (value !== "") {
       props.setUserNickname(value);
-      props.setNewNickname(false)
+      props.actualizar(28, value);
+      props.setNewNickname(false);
     } 
     }
   return (
