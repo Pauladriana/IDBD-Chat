@@ -5,14 +5,22 @@ export default function UserContainer(props) {
 
   const user = props.user;
   const setChatHeader = props.setChatHeader;
+  const agregarGroup = props.agregarGroup;
+  const setClasificacion = props.setClasificacion;
+  const setSelectedChat = props.setSelectedChat;
+  setClasificacion('chat')
 
   const handleClick = (e) => {
     const selected = e.target.innerText;
-    setChatHeader(selected)
+    setChatHeader(selected);
+    setSelectedChat(selected);
+    if (selected !== "") {
+      agregarGroup("chat", { Id: selected, content: [{from: 'Admin', text: 'Welcome, enjoy the chat'}] });
+    }
   }
   return (
       <Usercontainer>
-        <p onClick={handleClick}>{user.name}</p>
+        <p onClick={handleClick}>{user.Id}</p>
       </Usercontainer>
   );
 }

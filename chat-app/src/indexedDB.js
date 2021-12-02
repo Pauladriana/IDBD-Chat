@@ -16,6 +16,7 @@ conexion.onupgradeneeded = (e) => {
   console.log('Base de datos creada', db);
   const groups = db.createObjectStore("groups", { keyPath: "Id", autoIncrement: true });
   const users = db.createObjectStore("users", { keyPath: "Id", autoIncrement: true });
+  const chat = db.createObjectStore("chat", { keyPath: "Id", autoIncrement: true });
 }
 
 
@@ -55,15 +56,10 @@ export const addGroupChat= (table, clave, info) => {
   const conexion = coleccionObjetos.get(clave)
 
   conexion.onsuccess = (e) => {
-    console.log(conexion.result);
-    const data = conexion.result;
-    data.content = info;
-    const requestUpdate = coleccionObjetos.put(data);
-
-    requestUpdate.onsuccess = function (event) {
-      console.log(requestUpdate.result);
-      consultar(table)
-    };
+    let data = conexion.result;
+    data.content.push(info);
+    const bucketStore = e.target.source;
+    bucketStore.put(data);
   };
 }
 

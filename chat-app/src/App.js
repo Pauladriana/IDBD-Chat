@@ -21,9 +21,10 @@ function App() {
   const [selectedOption, setSelectedOption] = useState('users');
   const [usersOnline, setUsersOnline] = useState([]);
   const [groupsOnline, setGroupsOnline] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState('');
+  const [selectedChat, setSelectedChat] = useState('');
   const [search, setSearch] = useState('');
-  const [chatHeader, setChatHeader] = useState('')
+  const [chatHeader, setChatHeader] = useState('');
+  const [clasificacion, setClasificacion] = useState('chat');
 
 
   useEffect(() => {
@@ -44,12 +45,12 @@ function App() {
     const { value } = e.target
     console.log(value);
     if (value !== "") {
-      agregarGroup("groups", { Id: value, content: [{from: 'Martha', text: 'Welcome everybody'}] });
+      agregarGroup("groups", { Id: value, content: [{from: 'Admin', text: 'Welcome, enjoy the chat'}] });
     }
   }
 
-const showUsers = (users) => users.map((userOnline) => <UserContainer user={userOnline} setChatHeader={setChatHeader} />);
-const showGroups = (groups) => groups.map((groupOnline) => <GroupContainer group={groupOnline} setChatHeader={setChatHeader} setSelectedGroup={setSelectedGroup}/>);
+const showUsers = (users) => users.map((userOnline) => <UserContainer user={userOnline} setChatHeader={setChatHeader} setSelectedChat={setSelectedChat} agregarGroup={agregarGroup} setClasificacion={setClasificacion}/>);
+const showGroups = (groups) => groups.map((groupOnline) => <GroupContainer group={groupOnline} setChatHeader={setChatHeader} setSelectedChat={setSelectedChat} setClasificacion={setClasificacion}/>);
 
 console.log(search);
 console.log(usersOnline);
@@ -72,7 +73,7 @@ return (
 
         {(selectedOption === 'users' && search) ? (showUsers(search)) :
           (selectedOption === 'users') ? (showUsers(usersOnline)) :
-            (selectedOption === 'groups' && search) ? (showGroups()) :
+            (selectedOption === 'groups' && search) ? (showGroups(search)) :
               (<div>
                 {showGroups(groupsOnline)}
                 <p>Crear grupo</p>
@@ -86,8 +87,8 @@ return (
 
       <ChatMessages>
         <ChatHeader selected={chatHeader} />
-        <ChatSelected selectedGroup={selectedGroup} obtener={obtener}/>
-        <ChatTyping selectedGroup={selectedGroup} addGroupChat={addGroupChat} />
+        <ChatSelected selectedGroup={selectedChat} obtener={obtener} clasificacion={clasificacion}/>
+        <ChatTyping selectedGroup={selectedChat} addGroupChat={addGroupChat} clasificacion={clasificacion}/>
       </ChatMessages>
     </HeaderContainer>
 

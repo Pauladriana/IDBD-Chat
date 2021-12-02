@@ -1,22 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 export default function ChatSelected(props) {
 
-  const selectedGroup = props.selectedGroup;
+  const selectedChat = props.selectedGroup;
   const obtener = props.obtener;
-  console.log(selectedGroup);
+  const clasificacion = props.clasificacion;
+
   const [groupInfo, setGroupInfo] = useState({content: [{from: 'Rosita', text: 'Hola'}]});
-  setTimeout(() => {
-    setGroupInfo(obtener("groups", selectedGroup));
-  }, 2500);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setGroupInfo(obtener(clasificacion, selectedChat));
+    }, 2500);
+  })
+  
   console.log(groupInfo);
-
+  
   return (
       <Chatselected>
             {groupInfo && groupInfo.content.map((elem) => (
-              <Chattext key={elem.id}>
+              <Chattext key={elem}>
               <p><strong>{elem.from}</strong></p>
               <p>{elem.text}</p>
               </Chattext>
