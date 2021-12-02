@@ -11,11 +11,9 @@ export default function UserContainer(props) {
     setChatHeader(selected)
   }
   return (
-    <>
       <Usercontainer>
         <p onClick={handleClick}>{user.name}</p>
       </Usercontainer>
-    </>
   );
 }
 

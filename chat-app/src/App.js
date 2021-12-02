@@ -9,8 +9,9 @@ import GroupContainer from './components/groups';
 import ChatHeader from './components/chatHeader';
 import ChatTyping from './components/chatTyping';
 import NameInput from './components/nameInput';
+import ChatSelected from './components/chatSelected';
 import { generateName } from './components/nickNameGen';
-import { actualizar, obtener, agregar, consultar } from './indexedDB';
+import { actualizar, obtener, agregarUser, agregarGroup, consultar, addGroupChat } from './indexedDB';
 
 
 function App() {
@@ -19,58 +20,79 @@ function App() {
   const [newNickname, setNewNickname] = useState(false);
   const [selectedOption, setSelectedOption] = useState('users');
   const [usersOnline, setUsersOnline] = useState([]);
+  const [groupsOnline, setGroupsOnline] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState('');
   const [search, setSearch] = useState('');
   const [chatHeader, setChatHeader] = useState('')
 
-  
+
   useEffect(() => {
     setTimeout(() => {
       if (!userNickname) {
-      const newNickname = generateName();
-      agregar({ name: newNickname });
-      setUserNickname(newNickname);
-      localStorage.setItem("userLogged", newNickname);
-      setUsersOnline(consultar());
-      console.log(consultar());
-      }}, 3000);  
+        const newNickname = generateName();
+        agregarUser("users", { Id: newNickname });
+        setUserNickname(newNickname);
+        localStorage.setItem("userLogged", newNickname);
+        setUsersOnline(consultar("users"));
+        setGroupsOnline(consultar("groups"));
+        console.log(consultar("users"));
+      }
+    }, 3000);
   }, [])
 
-  const showUsers = (users) => users.map((userOnline) => <UserContainer user={userOnline} setChatHeader={setChatHeader} />);
+  const handleChange = (e) => {
+    const { value } = e.target
+    console.log(value);
+    if (value !== "") {
+      agregarGroup("groups", { Id: value, content: [{from: 'Martha', text: 'Welcome everybody'}] });
+    }
+  }
 
-  console.log(search);
-  console.log(usersOnline);
-  return (
-    <div>
-      <HeaderContainer>
-        <ChatControl>
-          <ControlHeader>
-            <div>
-              {newNickname ? <NameInput placeholder={userNickname} setUserNickname={setUserNickname} setNewNickname={setNewNickname} actualizar={actualizar}/> : <p>{userNickname}</p>}
-              <FontAwesomeIcon icon={faPen} onClick={() => { setNewNickname(true); console.log(usersOnline); }} />
-            </div>
-            <div>
-              <FontAwesomeIcon icon={faUserAlt} onClick={() => { setSelectedOption('users') }} />
-              <FontAwesomeIcon icon={faUsers} onClick={() => { setSelectedOption('groups') }} />
-            </div>
-          </ControlHeader>
+const showUsers = (users) => users.map((userOnline) => <UserContainer user={userOnline} setChatHeader={setChatHeader} />);
+const showGroups = (groups) => groups.map((groupOnline) => <GroupContainer group={groupOnline} setChatHeader={setChatHeader} setSelectedGroup={setSelectedGroup}/>);
 
-          <SearchBar usersOnline={usersOnline} setSearch={setSearch} />
+console.log(search);
+console.log(usersOnline);
+return (
+  <div>
+    <HeaderContainer>
+      <ChatControl>
+        <ControlHeader>
+          <div>
+            {newNickname ? <NameInput placeholder={userNickname} setUserNickname={setUserNickname} setNewNickname={setNewNickname} actualizar={actualizar} /> : <p>{userNickname}</p>}
+            <FontAwesomeIcon icon={faPen} onClick={() => { setNewNickname(true); console.log(usersOnline); }} />
+          </div>
+          <div>
+            <FontAwesomeIcon icon={faUserAlt} onClick={() => { setSelectedOption('users') }} />
+            <FontAwesomeIcon icon={faUsers} onClick={() => { setSelectedOption('groups') }} />
+          </div>
+        </ControlHeader>
 
-          {(selectedOption === 'users' && search) ? (showUsers(search)) :
+        <SearchBar usersOnline={usersOnline} setSearch={setSearch} />
+
+        {(selectedOption === 'users' && search) ? (showUsers(search)) :
           (selectedOption === 'users') ? (showUsers(usersOnline)) :
-          <GroupContainer />}
-          
-        </ChatControl>
+            (selectedOption === 'groups' && search) ? (showGroups()) :
+              (<div>
+                {showGroups(groupsOnline)}
+                <p>Crear grupo</p>
+                <input
+                type="text"
+                placeholder="Search..."
+                onBlur={handleChange}
+                ></input>
+                </div>)}
+      </ChatControl>
 
-        <ChatMessages>
-          <ChatHeader selected={chatHeader} />
-          <ChatSelected></ChatSelected>
-          <ChatTyping />
-        </ChatMessages>
-      </HeaderContainer>
+      <ChatMessages>
+        <ChatHeader selected={chatHeader} />
+        <ChatSelected selectedGroup={selectedGroup} obtener={obtener}/>
+        <ChatTyping selectedGroup={selectedGroup} addGroupChat={addGroupChat} />
+      </ChatMessages>
+    </HeaderContainer>
 
-    </div>
-  );
+  </div>
+);
 }
 
 const HeaderContainer = styled.div`
@@ -112,11 +134,6 @@ const ChatMessages = styled.div`
 	flex: 70;
 	height: 100vh;
 	background: linear-gradient(48.6deg, rgba(236, 128, 225, 0.62) 20.17%, rgba(93, 153, 197, 0.74) 71.07%);
-`;
-
-const ChatSelected = styled.div`
-	height: 70%;
-	background: none;
 `;
 
 

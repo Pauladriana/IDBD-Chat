@@ -1,19 +1,26 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export default function GroupContainer() {
+export default function GroupContainer(props) {
+  const groupOnline = props.group;
+  const setChatHeader = props.setChatHeader;
+  const setSelectedGroup = props.setSelectedGroup;
+
+  const handleClick = (e) => {
+    const selected = e.target.innerText;
+    setChatHeader(selected);
+    setSelectedGroup(selected)
+  }
+
   return (
-    <>
       <Groupcontainer>
-        <p>Grupo1</p>
+        <p onClick={handleClick}>{groupOnline.Id}</p>
       </Groupcontainer>
-      <p>+ Crear grupo</p>
-    </>
   );
 }
 
 const Groupcontainer = styled.div`
-    height: 6rem;
-    border: 0.5px solid #E5E5E5;
+    height: 3rem;
+    border-top: 0.5px solid #E5E5E5;
     box-sizing: border-box;
   `;

@@ -3,13 +3,25 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSmile, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
-export default function ChatTyping() {
+export default function ChatTyping(props) {
+  const selectedGroup = props.selectedGroup;
+  const addGroupChat = props.addGroupChat;
+
+  const handleBlur = (e) => {
+    const { value } = e.target
+    console.log(value);
+    if (value !== "") {
+      addGroupChat("groups", selectedGroup, {from: 'Martha', text: value});
+    }
+  }
   return (
     <>
       <Chattyping>
         <Typingcontainer>
         <FontAwesomeIcon icon={faSmile} />
-        <input type="text" placeholder="Escribe tu mensaje aqui"></input>
+        <input type="text" 
+        placeholder="Escribe tu mensaje aqui"
+        onBlur={handleBlur}></input>
         </Typingcontainer>
         <Send>
           <FontAwesomeIcon icon={faPaperPlane}/>
