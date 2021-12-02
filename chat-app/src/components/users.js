@@ -1,13 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 export default function UserContainer(props) {
 
-  const [user, setUser] = useState(props.user)
-  useEffect(() => {
-    setUser(props.user)
-  })
-
+  const user = props.user;
   const setChatHeader = props.setChatHeader;
   const agregarGroup = props.agregarGroup;
   const setClasificacion = props.setClasificacion;
@@ -22,7 +18,6 @@ export default function UserContainer(props) {
     setSelectedChat(selected);
     const newInfo = obtener("chat", selected);
     setChatInfo(newInfo);
-    console.log(obtener("chat", selected));
     if (selected !== "") {
       agregarGroup("chat", { Id: selected, content: [{from: 'Admin', text: 'Welcome, enjoy the chat'}] });
     }

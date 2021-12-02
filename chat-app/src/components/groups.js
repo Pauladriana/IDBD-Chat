@@ -14,10 +14,8 @@ export default function GroupContainer(props) {
     const selected = e.target.innerText;
     setChatHeader(selected);
     setSelectedChat(selected);
-    console.log(selected);
     const newInfo = obtener("groups", selected);
     setChatInfo(newInfo);
-    console.log(obtener("groups", selected));
   }
 
   return (

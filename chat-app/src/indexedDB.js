@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 const indexedDb = window.indexedDB;
 
@@ -7,13 +8,11 @@ const conexion = indexedDb.open("onlineChat");
 
 conexion.onsuccess = () => {
   db = conexion.result
-  console.log('Base de datos abierta', db);
 
 }
 
 conexion.onupgradeneeded = (e) => {
   db = e.target.result
-  console.log('Base de datos creada', db);
   const groups = db.createObjectStore("groups", { keyPath: "Id", autoIncrement: true });
   const users = db.createObjectStore("users", { keyPath: "Id", autoIncrement: true });
   const chat = db.createObjectStore("chat", { keyPath: "Id", autoIncrement: true });
@@ -31,7 +30,6 @@ export const agregarUser = (table, data) => {
 
   request.onsuccess = (e) => {
     const id = request.result;
-    console.log(id);
     localStorage.setItem("idLogged", id);
     consultar(table);
   }
@@ -44,8 +42,6 @@ export const agregarGroup = (table, data) => {
 
   request.onsuccess = (e) => {
     const id = request.result;
-    console.log(id);
-    //localStorage.setItem("idLogged", id);
     consultar(table);
   }
 }
@@ -70,15 +66,12 @@ export const obtener = (table, clave) => {
   let chat = [];
   conexion.onsuccess = (e) => {
     const info = conexion.result && conexion.result.content;
-    console.log(info);
     if (info) {
       for (let i = 0; i < info.length; i++) {
-        console.log(info[i]);
         chat.push(info[i])
       }
     }  
   }
-  console.log(chat);
   return chat
 }
 
@@ -88,13 +81,11 @@ export const actualizar = (table, clave, info) => {
   const conexion = coleccionObjetos.get(clave)
   
   conexion.onsuccess = (e) => {
-    console.log(conexion.result);
     const data = conexion.result;
     data.name = info;
     const requestUpdate = coleccionObjetos.put(data);
 
     requestUpdate.onsuccess = function (event) {
-      console.log(requestUpdate.result);
       consultar(table)
     };
   }
@@ -115,12 +106,10 @@ export const consultar = (table) => {
   const trasaccion = db.transaction([table], 'readonly')
   const coleccionObjetos = trasaccion.objectStore(table)
   const conexion = coleccionObjetos.openCursor()
-  console.log('Lista de usuarios');
   const users = [];
   conexion.onsuccess = (e) => {
     const cursor = e.target.result
     if (cursor) {
-      //console.log(cursor.value);
       users.push(cursor.value);
       cursor.continue();
 
@@ -129,5 +118,4 @@ export const consultar = (table) => {
     }
   }
   return users
-  //console.log(users);
 }

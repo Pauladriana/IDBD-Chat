@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserAlt, faUsers, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faUserAlt, faUsers, faPen, faTimes, faLevelUpAlt } from '@fortawesome/free-solid-svg-icons';
 import SearchBar from './components/searchBar';
 import UserContainer from './components/users';
 import GroupContainer from './components/groups';
@@ -28,29 +27,20 @@ function App() {
 
 
   useEffect(() => {
-    window.addEventListener('storage', () => {
-      // When local storage changes, dump the list to
-      // the console.
-      console.log('algo cambio');
-    });
-    
     setTimeout(() => {
       if (!userNickname) {
         const newNickname = generateName();
         agregarUser("users", { Id: newNickname, name: newNickname,});
         setUserNickname(newNickname);
         localStorage.setItem("userLogged", newNickname);
-        console.log(localStorage.getItem("userLogged"), newNickname);
         setUsersOnline(consultar("users"));
         setGroupsOnline(consultar("groups"));
-        console.log(consultar("users"));
       }
     }, 3000);
-  }, [])
+  }, [userNickname])
 
   const handleChange = (e) => {
     const { value } = e.target
-    console.log(value);
     if (value !== "") {
       agregarGroup("groups", { Id: value, content: [{from: 'Admin', text: 'Welcome, enjoy the chat'}] });
     }
@@ -60,12 +50,13 @@ const showUsers = (users) => users.map((userOnline) => <UserContainer user={user
 const showGroups = (groups) => groups.map((groupOnline) => <GroupContainer group={groupOnline} setChatHeader={setChatHeader} setSelectedChat={setSelectedChat} setClasificacion={setClasificacion} setChatInfo={setChatInfo} obtener={obtener}/>);
 const showChat = (chat) => chat.map((elem) => (
   <Chattext>
+    <div>
     <p><strong>{elem.from}</strong></p>
+    <FontAwesomeIcon icon={ faTimes } onClick={() => { setSelectedOption('users') }} />
+    </div>
     <p>{elem.text}</p>
   </Chattext> ));
 
-console.log(search);
-console.log(usersOnline);
 return (
   <PageContainer>
     <HeaderContainer>
@@ -93,6 +84,7 @@ return (
                 placeholder="Search..."
                 onBlur={handleChange}
                 ></input>
+                <FontAwesomeIcon icon={faLevelUpAlt} />
                 </div>)}
       </ChatControl>
 
@@ -114,10 +106,12 @@ const PageContainer = styled.div`
   height: 50rem;
   margin: auto;
 	background: #fff;
+  font-family: Arial, Helvetica, sans-serif;
 `;
 
 const HeaderContainer = styled.div`
 	height: fit-content;
+  width: fit-content;
   display: flex;
 	background: #fff;
   border: 1px solid #E5E5E5;
@@ -155,15 +149,22 @@ const ChatMessages = styled.div`
 	background: linear-gradient(48.6deg, rgba(236, 128, 225, 0.62) 20.17%, rgba(93, 153, 197, 0.74) 71.07%);
 `;
 const Chatselected = styled.div`
-	height: 70%;
+	height: 60%;
 	background: none;
   overflow-y: scroll;
+  padding: 2rem
 `;
 
 const Chattext = styled.div`
 	width: 70%;
 	background: #fff;
-    margin: auto;
+  margin: 1rem auto;
+  padding: 0 1rem 1rem 1rem;
+    div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 `;
 
 export default App;

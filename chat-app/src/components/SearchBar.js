@@ -9,9 +9,7 @@ export default function SearchBar(props) {
 
   const handleChange = (e) => {
     const { value } = e.target
-    console.log(value);
     if (value !== "") {
-      //console.log(usersOnline);
       setSearch(usersOnline.filter((user) => user.name && user.name.toLowerCase().includes(value.toLowerCase())));
     } else {
       setSearch(usersOnline);

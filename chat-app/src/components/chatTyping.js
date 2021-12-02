@@ -12,7 +12,6 @@ export default function ChatTyping(props) {
 
   const handleChange = (e) => {
     const { value } = e.target
-    console.log(value);
     if (value !== "") {
       setMessage(value);
       setinputValue(value)
@@ -21,7 +20,6 @@ export default function ChatTyping(props) {
 
   const handleClick = () => {
     const user = localStorage.getItem("userLogged");
-    console.log(clasificacion, selectedGroup);
     addGroupChat(clasificacion, selectedGroup, {from: user, text: message});
     setinputValue('')
   }
