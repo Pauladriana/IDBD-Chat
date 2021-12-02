@@ -1,33 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSmile, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 export default function ChatTyping(props) {
   const selectedGroup = props.selectedGroup;
   const addGroupChat = props.addGroupChat;
   const clasificacion = props.clasificacion;
+  const [inputValue, setinputValue] = useState('');
+  const [message, setMessage] = useState(null);
 
-  const handleBlur = (e) => {
+  const handleChange = (e) => {
     const { value } = e.target
     console.log(value);
     if (value !== "") {
-      const user = localStorage.getItem("userLogged");
-      console.log(clasificacion, selectedGroup);
-      addGroupChat(clasificacion, selectedGroup, {from: user, text: value});
+      setMessage(value);
+      setinputValue(value)
     }
+  }
+
+  const handleClick = () => {
+    const user = localStorage.getItem("userLogged");
+    console.log(clasificacion, selectedGroup);
+    addGroupChat(clasificacion, selectedGroup, {from: user, text: message});
+    setinputValue('')
   }
   return (
     <>
       <Chattyping>
         <Typingcontainer>
-        <FontAwesomeIcon icon={faSmile} />
         <input type="text" 
         placeholder="Escribe tu mensaje aqui"
-        onBlur={handleBlur}></input>
+        value={inputValue}
+        onChange={handleChange}></input>
         </Typingcontainer>
         <Send>
-          <FontAwesomeIcon icon={faPaperPlane}/>
+          <FontAwesomeIcon icon={faPaperPlane} onClick={handleClick}/>
         </Send>
       </Chattyping>
     </>
@@ -54,13 +62,7 @@ const Typingcontainer = styled.div`
       outline: none;
       border: none;
       padding: 0 1rem;
-    }
-    .send{
-      height: 1.8rem;
-      display: block;
-      padding-top: 1rem;
-      font-size: 1.5rem;
-      color: #C027D9;
+      margin-right: 0.5rem;
     }
   }
 `;
@@ -70,5 +72,6 @@ const Send = styled.div`
   display: block;
   padding-top: 1rem;
   font-size: 1.5rem;
+  margin-left: 1rem;
   color: #C027D9;
 `;

@@ -9,7 +9,6 @@ import GroupContainer from './components/groups';
 import ChatHeader from './components/chatHeader';
 import ChatTyping from './components/chatTyping';
 import NameInput from './components/nameInput';
-import ChatSelected from './components/chatSelected';
 import { generateName } from './components/nickNameGen';
 import { actualizar, obtener, agregarUser, agregarGroup, consultar, addGroupChat } from './indexedDB';
 
@@ -25,15 +24,23 @@ function App() {
   const [search, setSearch] = useState('');
   const [chatHeader, setChatHeader] = useState('');
   const [clasificacion, setClasificacion] = useState('chat');
+  const [chatInfo, setChatInfo] = useState([{from: 'Admin', text: 'Welcome'}]);
 
 
   useEffect(() => {
+    window.addEventListener('storage', () => {
+      // When local storage changes, dump the list to
+      // the console.
+      console.log('algo cambio');
+    });
+    
     setTimeout(() => {
       if (!userNickname) {
         const newNickname = generateName();
-        agregarUser("users", { Id: newNickname });
+        agregarUser("users", { Id: newNickname, name: newNickname,});
         setUserNickname(newNickname);
         localStorage.setItem("userLogged", newNickname);
+        console.log(localStorage.getItem("userLogged"), newNickname);
         setUsersOnline(consultar("users"));
         setGroupsOnline(consultar("groups"));
         console.log(consultar("users"));
@@ -49,18 +56,23 @@ function App() {
     }
   }
 
-const showUsers = (users) => users.map((userOnline) => <UserContainer user={userOnline} setChatHeader={setChatHeader} setSelectedChat={setSelectedChat} agregarGroup={agregarGroup} setClasificacion={setClasificacion}/>);
-const showGroups = (groups) => groups.map((groupOnline) => <GroupContainer group={groupOnline} setChatHeader={setChatHeader} setSelectedChat={setSelectedChat} setClasificacion={setClasificacion}/>);
+const showUsers = (users) => users.map((userOnline) => <UserContainer user={userOnline} setChatHeader={setChatHeader} setSelectedChat={setSelectedChat} agregarGroup={agregarGroup} setClasificacion={setClasificacion} setChatInfo={setChatInfo} obtener={obtener}/>);
+const showGroups = (groups) => groups.map((groupOnline) => <GroupContainer group={groupOnline} setChatHeader={setChatHeader} setSelectedChat={setSelectedChat} setClasificacion={setClasificacion} setChatInfo={setChatInfo} obtener={obtener}/>);
+const showChat = (chat) => chat.map((elem) => (
+  <Chattext>
+    <p><strong>{elem.from}</strong></p>
+    <p>{elem.text}</p>
+  </Chattext> ));
 
 console.log(search);
 console.log(usersOnline);
 return (
-  <div>
+  <PageContainer>
     <HeaderContainer>
       <ChatControl>
         <ControlHeader>
           <div>
-            {newNickname ? <NameInput placeholder={userNickname} setUserNickname={setUserNickname} setNewNickname={setNewNickname} actualizar={actualizar} /> : <p>{userNickname}</p>}
+            {newNickname ? <NameInput placeholder={userNickname} setUserNickname={setUserNickname} setNewNickname={setNewNickname} newNickname={newNickname} actualizar={actualizar} /> : <p>{userNickname}</p>}
             <FontAwesomeIcon icon={faPen} onClick={() => { setNewNickname(true); console.log(usersOnline); }} />
           </div>
           <div>
@@ -71,9 +83,8 @@ return (
 
         <SearchBar usersOnline={usersOnline} setSearch={setSearch} />
 
-        {(selectedOption === 'users' && search) ? (showUsers(search)) :
+        {(selectedOption === 'users' && search !== '') ? (showUsers(search)) :
           (selectedOption === 'users') ? (showUsers(usersOnline)) :
-            (selectedOption === 'groups' && search) ? (showGroups(search)) :
               (<div>
                 {showGroups(groupsOnline)}
                 <p>Crear grupo</p>
@@ -87,17 +98,25 @@ return (
 
       <ChatMessages>
         <ChatHeader selected={chatHeader} />
-        <ChatSelected selectedGroup={selectedChat} obtener={obtener} clasificacion={clasificacion}/>
+        <Chatselected>
+              {showChat(chatInfo)} 
+        </Chatselected>
         <ChatTyping selectedGroup={selectedChat} addGroupChat={addGroupChat} clasificacion={clasificacion}/>
       </ChatMessages>
     </HeaderContainer>
 
-  </div>
+  </PageContainer>
 );
 }
 
+const PageContainer = styled.div`
+	width: 75rem;
+  height: 50rem;
+  margin: auto;
+	background: #fff;
+`;
+
 const HeaderContainer = styled.div`
-	width: 100vw;
 	height: fit-content;
   display: flex;
 	background: #fff;
@@ -106,7 +125,6 @@ const HeaderContainer = styled.div`
 
 const ChatControl = styled.div`
 	flex: 30;
-	height: 100vh;
 	background: #fff;
 `;
 
@@ -136,6 +154,16 @@ const ChatMessages = styled.div`
 	height: 100vh;
 	background: linear-gradient(48.6deg, rgba(236, 128, 225, 0.62) 20.17%, rgba(93, 153, 197, 0.74) 71.07%);
 `;
+const Chatselected = styled.div`
+	height: 70%;
+	background: none;
+  overflow-y: scroll;
+`;
 
+const Chattext = styled.div`
+	width: 70%;
+	background: #fff;
+    margin: auto;
+`;
 
 export default App;

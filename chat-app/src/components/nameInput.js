@@ -2,12 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 
 export default function NameInput(props) {
+    const newNickname = props.newNickname;
+    console.log(localStorage.getItem("userLogged"), newNickname)
+
     const handleBlur = (e) => {
         const { value } = e.target
         console.log(value);
     if (value !== "") {
       props.setUserNickname(value);
-      props.actualizar("users", parseInt(localStorage.getItem("idLogged")), value);
+      props.actualizar("users", localStorage.getItem("userLogged"), value);
       props.setNewNickname(false);
       console.log(localStorage.getItem("usersOnline"));
     } 

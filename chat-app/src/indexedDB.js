@@ -67,21 +67,30 @@ export const obtener = (table, clave) => {
   const trasaccion = db.transaction([table], 'readonly')
   const coleccionObjetos = trasaccion.objectStore(table)
   const conexion = coleccionObjetos.get(clave)
-
+  let chat = [];
   conexion.onsuccess = (e) => {
-    return conexion.result;
+    const info = conexion.result && conexion.result.content;
+    console.log(info);
+    if (info) {
+      for (let i = 0; i < info.length; i++) {
+        console.log(info[i]);
+        chat.push(info[i])
+      }
+    }  
   }
+  console.log(chat);
+  return chat
 }
 
 export const actualizar = (table, clave, info) => {
   const trasaccion = db.transaction([table], 'readwrite')
   const coleccionObjetos = trasaccion.objectStore(table)
   const conexion = coleccionObjetos.get(clave)
-
+  
   conexion.onsuccess = (e) => {
     console.log(conexion.result);
     const data = conexion.result;
-    data.Id = info;
+    data.name = info;
     const requestUpdate = coleccionObjetos.put(data);
 
     requestUpdate.onsuccess = function (event) {

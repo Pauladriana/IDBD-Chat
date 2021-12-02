@@ -6,12 +6,18 @@ export default function GroupContainer(props) {
   const setChatHeader = props.setChatHeader;
   const setSelectedChat = props.setSelectedChat;
   const setClasificacion = props.setClasificacion;
+  const setChatInfo = props.setChatInfo;
+  const obtener = props.obtener;
   setClasificacion('groups')
 
   const handleClick = (e) => {
     const selected = e.target.innerText;
     setChatHeader(selected);
-    setSelectedChat(selected)
+    setSelectedChat(selected);
+    console.log(selected);
+    const newInfo = obtener("groups", selected);
+    setChatInfo(newInfo);
+    console.log(obtener("groups", selected));
   }
 
   return (
