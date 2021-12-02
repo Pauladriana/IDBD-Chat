@@ -1,4 +1,4 @@
-import { generateName } from './components/nickNameGen';
+
 
 const indexedDb = window.indexedDB;
 
@@ -9,9 +9,7 @@ const conexion = indexedDb.open("onlineChat");
 conexion.onsuccess = () => {
   db = conexion.result
   console.log('Base de datos abierta', db);
-  const newNickname = generateName();
-  agregar({ name: newNickname });
-  localStorage.setItem("userLogged", newNickname)
+  
 }
 
 conexion.onupgradeneeded = (e) => {
@@ -28,7 +26,13 @@ export const agregar = (data) => {
   const trasaccion = db.transaction(["users"], "readwrite");
   const coleccionObjetos = trasaccion.objectStore('users');
   var request = coleccionObjetos.add(data);
-  consultar()
+  
+  request.onsuccess = (e) => {
+    const id = request.result;
+    console.log(id);
+    localStorage.setItem("idLogged", id);
+    consultar();
+  }
 }
 
 export const obtener = (clave) => {
@@ -37,12 +41,11 @@ export const obtener = (clave) => {
   const conexion = coleccionObjetos.get(clave)
 
   conexion.onsuccess = (e) => {
-    console.log(conexion.result)
+    console.log(parseInt(localStorage.getItem("idLogged")));
   }
-
 }
 
-export const actualizar = (clave, value) => {
+export const actualizar = (clave, info) => {
   const trasaccion = db.transaction(['users'], 'readwrite')
   const coleccionObjetos = trasaccion.objectStore('users')
   const conexion = coleccionObjetos.get(clave)
@@ -50,7 +53,7 @@ export const actualizar = (clave, value) => {
   conexion.onsuccess = (e) => {
     console.log(conexion.result);
     const data = conexion.result;
-    data.name = value;
+    data.name = info;
     const requestUpdate = coleccionObjetos.put(data);
 
     requestUpdate.onsuccess = function (event) {
@@ -76,13 +79,18 @@ export const consultar = () => {
   const coleccionObjetos = trasaccion.objectStore('users')
   const conexion = coleccionObjetos.openCursor()
   console.log('Lista de usuarios');
+  const users = [];
   conexion.onsuccess = (e) => {
     const cursor = e.target.result
     if (cursor) {
-      console.log(cursor.value)
-      cursor.continue()
+      //console.log(cursor.value);
+      users.push(cursor.value);
+      cursor.continue();
+      
     } else {
       console.log('No hay tareas en la lista')
     }
   }
+  return users
+  //console.log(users);
 }

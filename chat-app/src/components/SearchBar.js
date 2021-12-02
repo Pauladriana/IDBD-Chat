@@ -3,12 +3,27 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
-export default function SearchBar() {
-  let a = 1;
+export default function SearchBar(props) {
+  let usersOnline = props.usersOnline;
+  const setSearch = props.setSearch;
+
+  const handleChange = (e) => {
+    const { value } = e.target
+    console.log(value);
+    if (value !== "") {
+      //console.log(usersOnline);
+      setSearch(usersOnline.filter((user) => user.name && user.name.toLowerCase().includes(value.toLowerCase())));
+    } 
+  }
+
   return (
     <>
     <Barcontainer>
-      <input type="text" placeholder="Search..."></input>
+      <input 
+      type="text" 
+      placeholder="Search..."
+      onChange={handleChange}
+      ></input>
       <FontAwesomeIcon icon={faSearch}/>
     </Barcontainer>
     </>

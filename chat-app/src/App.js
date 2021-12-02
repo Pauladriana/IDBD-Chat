@@ -3,26 +3,42 @@ import styled from 'styled-components';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserAlt, faUsers, faPen } from '@fortawesome/free-solid-svg-icons';
-import SearchBar from './components/SearchBar';
+import SearchBar from './components/searchBar';
 import UserContainer from './components/users';
 import GroupContainer from './components/groups';
 import ChatHeader from './components/chatHeader';
 import ChatTyping from './components/chatTyping';
 import NameInput from './components/nameInput';
 import { generateName } from './components/nickNameGen';
-import { actualizar, obtener } from './indexedDB';
+import { actualizar, obtener, agregar, consultar } from './indexedDB';
 
 
 function App() {
 
-  const [userNickname, setUserNickname] = useState('');
+  const [userNickname, setUserNickname] = useState(null);
   const [newNickname, setNewNickname] = useState(false);
   const [selectedOption, setSelectedOption] = useState('users');
+  const [usersOnline, setUsersOnline] = useState([]);
+  const [search, setSearch] = useState('');
+  const [chatHeader, setChatHeader] = useState('')
 
   
   useEffect(() => {
-    setUserNickname(localStorage.getItem("userLogged"));
+    setTimeout(() => {
+      if (!userNickname) {
+      const newNickname = generateName();
+      agregar({ name: newNickname });
+      setUserNickname(newNickname);
+      localStorage.setItem("userLogged", newNickname);
+      setUsersOnline(consultar());
+      console.log(consultar());
+      }}, 3000);  
   }, [])
+
+  const showUsers = (users) => users.map((userOnline) => <UserContainer user={userOnline} setChatHeader={setChatHeader} />);
+
+  console.log(search);
+  console.log(usersOnline);
   return (
     <div>
       <HeaderContainer>
@@ -30,7 +46,7 @@ function App() {
           <ControlHeader>
             <div>
               {newNickname ? <NameInput placeholder={userNickname} setUserNickname={setUserNickname} setNewNickname={setNewNickname} actualizar={actualizar}/> : <p>{userNickname}</p>}
-              <FontAwesomeIcon icon={faPen} onClick={() => { setNewNickname(true); obtener(28); }} />
+              <FontAwesomeIcon icon={faPen} onClick={() => { setNewNickname(true); console.log(usersOnline); }} />
             </div>
             <div>
               <FontAwesomeIcon icon={faUserAlt} onClick={() => { setSelectedOption('users') }} />
@@ -38,13 +54,16 @@ function App() {
             </div>
           </ControlHeader>
 
-          <SearchBar />
+          <SearchBar usersOnline={usersOnline} setSearch={setSearch} />
 
-          {(selectedOption === 'users') ? <UserContainer /> : <GroupContainer />}
+          {(selectedOption === 'users' && search) ? (showUsers(search)) :
+          (selectedOption === 'users') ? (showUsers(usersOnline)) :
+          <GroupContainer />}
+          
         </ChatControl>
 
         <ChatMessages>
-          <ChatHeader selected={'hola'} />
+          <ChatHeader selected={chatHeader} />
           <ChatSelected></ChatSelected>
           <ChatTyping />
         </ChatMessages>

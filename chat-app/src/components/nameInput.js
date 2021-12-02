@@ -7,8 +7,9 @@ export default function NameInput(props) {
         console.log(value);
     if (value !== "") {
       props.setUserNickname(value);
-      props.actualizar(28, value);
+      props.actualizar(parseInt(localStorage.getItem("idLogged")), value);
       props.setNewNickname(false);
+      console.log(localStorage.getItem("usersOnline"));
     } 
     }
   return (
